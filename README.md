@@ -2,7 +2,7 @@
 
 This is a template for building a [Shopify app](https://shopify.dev/docs/apps/getting-started) using the [Remix](https://remix.run) framework.
 
-Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](#installing-the-template).
+Rather than cloning this repo, you can use your preferred package manager and the Shopify CLI with [these steps](https://shopify.dev/docs/apps/getting-started/create).
 
 Visit the [`shopify.dev` documentation](https://shopify.dev/docs/api/shopify-app-remix) for more details on the Remix app package.
 
@@ -197,6 +197,26 @@ Using pnpm:
 ```shell
 pnpm run shopify app config push
 ```
+
+### My webhook subscriptions aren't being updated
+
+This template registers webhooks after OAuth completes, usng the `afterAuth` hook when calling `shopifyApp`.
+The package calls that hook in 2 scenarios:
+- After installing the app
+- When an access token expires
+
+During normal development, the app won't need to re-authenticate most of the time, so the subscriptions aren't updated.
+
+To force your app to update the subscriptions, you can uninstall and reinstall it in your development store.
+That will force the OAuth process and call the `afterAuth` hook.
+
+### Admin created webhook failing HMAC validation
+
+Webhooks subscriptions created in the [Shopify admin](https://help.shopify.com/en/manual/orders/notifications/webhooks) will fail HMAC validation. This is because the webhook payload is not signed with your app's secret key.
+
+Create [webhook subscriptions]((https://shopify.dev/docs/api/shopify-app-remix/v1/guide-webhooks)) using the `shopifyApp` object instead.
+
+Test your webhooks with the [Shopify CLI](https://shopify.dev/docs/apps/tools/cli/commands#webhook-trigger) or by triggering events manually in the Shopify admin(e.g. Updating the product title to trigger a `PRODUCTS_UPDATE`).
 
 ### Incorrect GraphQL Hints
 
